@@ -1,0 +1,52 @@
+version: "3"
+services:
+  mariadb:
+    image: mariadb:10
+    env_file: /home/ecelis/var/services/.env
+    volumes:
+      - "/srv/mariadb:/var/lib/mysql"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  piwigo:
+    image: linuxserver/piwigo
+    environment:
+      - TZ="America/Mexico_City"
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - "/srv/piwigo/config:/config"
+    ports:
+      - "127.0.0.1:8074:80"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8088:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
