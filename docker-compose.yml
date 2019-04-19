@@ -30,6 +30,8 @@ services:
     ports:
       - "127.0.0.1:8074:80"
     deploy:
+      placement:
+        constraints: [node.role == manager]
       replicas: 1
       resources:
         limits:
