@@ -3,8 +3,31 @@ services:
   mariadb:
     image: mariadb:10
     env_file: /home/ecelis/var/services/.env
+    ports:
+      - "3306:3306"
     volumes:
       - "/srv/mariadb:/var/lib/mysql"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  postgresql:
+    image: mdillon/postgis:10
+    env_file: /home/ecelis/var/services/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - "/srv/postgres:/var/lib/postgresql/data/pgdata"
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -41,31 +64,24 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-
-
-  piwigo:
-    image: linuxserver/piwigo
-    environment:
-      - TZ="America/Mexico_City"
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - "/srv/piwigo/config:/config"
-    ports:
-      - "127.0.0.1:8074:80"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-      replicas: 1
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+  #tonali:
+    #image: tonali/woocommerce
+    #ports:
+      #- "8080:80"
+    #env_file: /home/ecelis/var/services/.env
+    #deploy:
+      #placement:
+        #constraints: [node.role == manager]
+      #replicas: 1
+      #resources:
+        #limits:
+          #cpus: "0.3"
+          #memory: 128M
+      #restart_policy:
+        #condition: on-failure
+        #delay: 5s
+        #max_attempts: 3
+        #window: 120s
 
   visualizer:
     image: dockersamples/visualizer:stable
