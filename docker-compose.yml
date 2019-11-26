@@ -42,6 +42,24 @@ services:
         max_attempts: 3
         window: 120s
 
+  memcached:
+    image: memcached:alpine
+    ports:
+      - "11211:11211"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
   jenkins:
     image: patitoclub/jenkins
     environment:
@@ -64,25 +82,6 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-  #tonali:
-    #image: tonali/woocommerce
-    #ports:
-      #- "8080:80"
-    #env_file: /home/ecelis/var/services/.env
-    #deploy:
-      #placement:
-        #constraints: [node.role == manager]
-      #replicas: 1
-      #resources:
-        #limits:
-          #cpus: "0.3"
-          #memory: 128M
-      #restart_policy:
-        #condition: on-failure
-        #delay: 5s
-        #max_attempts: 3
-        #window: 120s
-
   visualizer:
     image: dockersamples/visualizer:stable
     ports:
