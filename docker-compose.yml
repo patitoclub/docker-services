@@ -91,3 +91,23 @@ services:
     deploy:
       placement:
         constraints: [node.role == manager]
+  tonali:
+    image: wordpress:5.3.2-php7.2-apache
+    ports:
+      - "8092:80"
+    volumes:
+      - "/srv/tonaliartesanal.com:/var/www/html"
+    env_file: ./.env
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
